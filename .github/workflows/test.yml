@@ -106,3 +106,10 @@ jobs:
           platforms: linux/amd64,linux/arm64
           cache-from: type=registry,ref=varuns03/is601-assignment-11:cache
           cache-to: type=inline,mode=max
+
+      - name: Show Docker images
+        run: docker images
+
+      - name: Show Docker Hub push logs
+        run: |
+          echo "Check previous step for Docker push output"
