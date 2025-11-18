@@ -149,44 +149,28 @@ class AbstractCalculation:
                inputs: List[float]) -> "Calculation":
         """
         Factory method to create the appropriate calculation subclass.
-        
-        This implements the Factory Pattern, which provides a centralized way
-        to create objects without specifying their exact class. The factory
-        determines which subclass to instantiate based on calculation_type.
-        
-        Benefits of Factory Pattern:
-        1. Encapsulation: Object creation logic is in one place
-        2. Flexibility: Easy to add new calculation types
-        3. Type Safety: Returns strongly-typed subclass instances
-        
+
+        This method now delegates to CalculationFactory in app/operations/factory.py,
+        centralizing the factory logic and illustrating the design pattern.
+
         Args:
             calculation_type: Type of calculation (e.g., 'addition')
             user_id: UUID of the user creating the calculation
             inputs: List of numbers to calculate
-            
+
         Returns:
             An instance of the appropriate Calculation subclass
-            
+
         Raises:
             ValueError: If calculation_type is not supported
-            
+
         Example:
             calc = Calculation.create('addition', user_id, [1, 2, 3])
             assert isinstance(calc, Addition)
             assert calc.get_result() == 6
         """
-        calculation_classes = {
-            'addition': Addition,
-            'subtraction': Subtraction,
-            'multiplication': Multiplication,
-            'division': Division,
-        }
-        calculation_class = calculation_classes.get(calculation_type.lower())
-        if not calculation_class:
-            raise ValueError(
-                f"Unsupported calculation type: {calculation_type}"
-            )
-        return calculation_class(user_id=user_id, inputs=inputs)
+        from app.operations.factory import CalculationFactory
+        return CalculationFactory.create(calculation_type, user_id, inputs)
 
     def get_result(self) -> float:
         """
