@@ -46,4 +46,7 @@ class CalculationFactory:
             raise ValueError(
                 f"Unsupported calculation type: {calculation_type}"
             )
+        # Division by zero validation
+        if calculation_type.lower() == "division" and any(x == 0 for x in inputs[1:]):
+            raise ValueError("Cannot divide by zero.")
         return calculation_class(user_id=user_id, inputs=inputs)

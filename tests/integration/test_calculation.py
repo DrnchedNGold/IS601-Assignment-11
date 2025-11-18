@@ -42,6 +42,45 @@ def dummy_user_id():
     """
     return uuid.uuid4()
 
+# ============================================================================
+# Integration Tests for Database Operations
+# ============================================================================
+
+import contextlib
+from app.database import SessionLocal
+from app.models.calculation import Calculation
+
+def test_db_insert_and_retrieve_addition():
+    from app.models.user import User
+    with contextlib.closing(SessionLocal()) as db:
+        user_id = dummy_user_id()
+        # Insert user first
+        user = User(id=user_id, username="Test User", email="test@example.com")
+        db.add(user)
+        db.commit()
+        # Now insert calculation
+        calc = Calculation.create("addition", user_id, [2, 3])
+        db.add(calc)
+        db.commit()
+        db.refresh(calc)
+        fetched = db.query(Calculation).filter_by(id=calc.id).first()
+        assert fetched is not None
+        assert fetched.type == "addition"
+        assert fetched.inputs == [2, 3]
+        assert fetched.get_result() == 5
+
+def test_db_insert_invalid_type():
+    with contextlib.closing(SessionLocal()) as db:
+        user_id = dummy_user_id()
+        with pytest.raises(ValueError):
+            calc = Calculation.create("modulus", user_id, [2, 3])
+
+def test_db_insert_division_by_zero():
+    with contextlib.closing(SessionLocal()) as db:
+        user_id = dummy_user_id()
+        with pytest.raises(ValueError):
+            calc = Calculation.create("division", user_id, [10, 0])
+
 
 # ============================================================================
 # Tests for Individual Calculation Types
