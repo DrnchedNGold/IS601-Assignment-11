@@ -50,9 +50,9 @@ jobs:
       - name: Initialize database
         env:
           DATABASE_URL: postgresql://user:password@localhost:5432/mytestdb
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           source venv/bin/activate
-          cd ${{ github.workspace }}
           python scripts/init_db.py
       
       - name: Run tests
