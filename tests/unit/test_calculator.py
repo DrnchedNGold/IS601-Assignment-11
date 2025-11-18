@@ -232,3 +232,129 @@ def test_divide_by_zero() -> None:
     # Assert that the exception message contains the expected error message
     assert "Cannot divide by zero!" in str(excinfo.value), \
         f"Expected error message 'Cannot divide by zero!', but got '{excinfo.value}'"
+
+# ---------------------------------------------
+# Tests for app.database utility functions
+# ---------------------------------------------
+
+from app.database import get_engine, get_sessionmaker, SQLALCHEMY_DATABASE_URL
+
+def test_get_engine_returns_engine():
+    engine = get_engine()
+    from sqlalchemy.engine import Engine
+    assert isinstance(engine, Engine)
+
+def test_get_sessionmaker_returns_sessionmaker():
+    engine = get_engine()
+    Session = get_sessionmaker(engine)
+    from sqlalchemy.orm import sessionmaker
+    assert isinstance(Session, sessionmaker)
+
+def test_get_engine_custom_url():
+    from app.database import get_engine
+    custom_url = "sqlite:///:memory:"
+    engine = get_engine(custom_url)
+    from sqlalchemy.engine import Engine
+    assert isinstance(engine, Engine)
+
+def test_user_repr():
+    from app.models.user import User
+    import uuid
+    user = User(id=uuid.uuid4(), username="TestUser", email="testuser@example.com")
+    assert "<User(username=TestUser, email=testuser@example.com)>" == repr(user)
+
+# ---------------------------------------------
+# Coverage for error branches in Calculation models
+# ---------------------------------------------
+
+from app.models.calculation import Addition, Subtraction, Multiplication, Division
+import uuid
+
+def test_addition_invalid_inputs_type():
+    addition = Addition(user_id=uuid.uuid4(), inputs="not-a-list")
+    try:
+        addition.get_result()
+    except ValueError as e:
+        assert "Inputs must be a list of numbers." in str(e)
+
+def test_addition_invalid_inputs_length():
+    addition = Addition(user_id=uuid.uuid4(), inputs=[1])
+    try:
+        addition.get_result()
+    except ValueError as e:
+        assert "Inputs must be a list with at least two numbers." in str(e)
+
+def test_subtraction_invalid_inputs_type():
+    subtraction = Subtraction(user_id=uuid.uuid4(), inputs="not-a-list")
+    try:
+        subtraction.get_result()
+    except ValueError as e:
+        assert "Inputs must be a list of numbers." in str(e)
+
+def test_subtraction_invalid_inputs_length():
+    subtraction = Subtraction(user_id=uuid.uuid4(), inputs=[1])
+    try:
+        subtraction.get_result()
+    except ValueError as e:
+        assert "Inputs must be a list with at least two numbers." in str(e)
+
+def test_multiplication_invalid_inputs_type():
+    multiplication = Multiplication(user_id=uuid.uuid4(), inputs="not-a-list")
+    try:
+        multiplication.get_result()
+    except ValueError as e:
+        assert "Inputs must be a list of numbers." in str(e)
+
+def test_multiplication_invalid_inputs_length():
+    multiplication = Multiplication(user_id=uuid.uuid4(), inputs=[1])
+    try:
+        multiplication.get_result()
+    except ValueError as e:
+        assert "Inputs must be a list with at least two numbers." in str(e)
+
+def test_division_invalid_inputs_type():
+    division = Division(user_id=uuid.uuid4(), inputs="not-a-list")
+    try:
+        division.get_result()
+    except ValueError as e:
+        assert "Inputs must be a list of numbers." in str(e)
+
+def test_division_invalid_inputs_length():
+    division = Division(user_id=uuid.uuid4(), inputs=[1])
+    try:
+        division.get_result()
+    except ValueError as e:
+        assert "Inputs must be a list with at least two numbers." in str(e)
+
+def test_base_calculation_get_result_not_implemented():
+    from app.models.calculation import AbstractCalculation
+    base = AbstractCalculation()
+    try:
+        base.get_result()
+    except NotImplementedError as e:
+        assert "Subclasses must implement get_result() method" in str(e)
+
+# ---------------------------------------------
+# Coverage for app/schemas/calculation.py error branches
+# ---------------------------------------------
+
+def test_calculation_base_invalid_type():
+    from app.schemas.calculation import CalculationBase
+    import pytest
+    with pytest.raises(ValueError) as excinfo:
+        CalculationBase(type="invalid_type", inputs=[1, 2])
+    assert "Type must be one of:" in str(excinfo.value)
+
+def test_calculation_base_too_few_inputs():
+    from app.schemas.calculation import CalculationBase
+    import pytest
+    with pytest.raises(ValueError) as excinfo:
+        CalculationBase(type="addition", inputs=[1])
+    assert "List should have at least 2 items after validation" in str(excinfo.value)
+
+def test_calculation_update_too_few_inputs():
+    from app.schemas.calculation import CalculationUpdate
+    import pytest
+    with pytest.raises(ValueError) as excinfo:
+        CalculationUpdate(inputs=[1])
+    assert "List should have at least 2 items after validation" in str(excinfo.value)

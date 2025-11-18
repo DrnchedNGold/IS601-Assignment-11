@@ -54,8 +54,10 @@ def test_db_insert_and_retrieve_addition():
     from app.models.user import User
     with contextlib.closing(SessionLocal()) as db:
         user_id = dummy_user_id()
-        # Insert user first
-        user = User(id=user_id, username="Test User", email="test@example.com")
+        # Use unique username and email for each test run to avoid IntegrityError
+        unique_username = f"TestUser_{user_id}"
+        unique_email = f"test_{user_id}@example.com"
+        user = User(id=user_id, username=unique_username, email=unique_email)
         db.add(user)
         db.commit()
         # Now insert calculation

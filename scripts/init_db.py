@@ -1,4 +1,5 @@
 from app.models.calculation import Base
+from app.models.user import User  # Ensure User table is registered
 from app.database import engine
 
 if __name__ == "__main__":
