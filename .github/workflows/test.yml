@@ -46,6 +46,13 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
           playwright install
+
+      - name: Initialize database
+        env:
+          DATABASE_URL: postgresql://user:password@localhost:5432/mytestdb
+        run: |
+          source venv/bin/activate
+          python scripts/init_db.py
       
       - name: Run tests
         env:
