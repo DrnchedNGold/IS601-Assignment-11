@@ -206,6 +206,11 @@ python main.py
 
 (or update this if the main script is different.)
 
+## Example Output
+
+After running a calculation, the result will be displayed in the API response.  
+If a QR code is generated, it will be saved to: `./output/qr_code.png`
+
 - **With Docker**:
 
 ```bash
@@ -262,3 +267,4 @@ Then submit the GitHub repository link as instructed.
 - [Python Downloads](https://www.python.org/downloads/)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [GitHub SSH Setup Guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh)
+- [Docker Hub Repository](https://hub.docker.com/repository/docker/varuns03/is601-assignment-11/general)
